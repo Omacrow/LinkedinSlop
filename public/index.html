@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Carousel Generator</title>
+
+  <!-- Bento design system: Inter (primary/display) + JetBrains Mono (mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script defer src="app.js"></script>
+
+  <style>
+    /* ── Bento design tokens ── */
+    :root {
+      --primary:   #FAD4C0;
+      --secondary: #80A1C1;
+      --surface:   #FFF5E6;
+      --text:      #111827;
+      --danger:    #DC2626;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--surface);
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      padding: 48px 36px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* ── Page header ── */
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+
+    h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 32px 0 8px;
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 260px;
+      padding: 11px 16px;
+      border: 1.5px solid var(--secondary);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus  { border-color: var(--primary); }
+    input[type="text"]::placeholder { color: var(--secondary); opacity: 0.6; }
+
+    select {
+      padding: 11px 16px;
+      border: 1.5px solid var(--secondary);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    button {
+      padding: 11px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    button:active    { transform: scale(0.98); }
+    button:disabled  { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* primary: dark for strong contrast */
+    .primary { background: var(--text); color: var(--surface); }
+    .primary:not(:disabled):hover { opacity: 0.82; }
+
+    /* accent: warm peach */
+    .accent { background: var(--primary); color: var(--text); }
+    .accent:not(:disabled):hover { opacity: 0.82; }
+
+    .copy-btn {
+      background: transparent;
+      border: 1.5px solid var(--secondary);
+      color: var(--secondary);
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      margin-top: 8px;
+      border-radius: 6px;
+    }
+    .copy-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    .shuffle {
+      background: transparent;
+      border: 1.5px solid var(--secondary);
+      color: var(--secondary);
+      padding: 11px 15px;
+      font-size: 1.1rem;
+      line-height: 1;
+      border-radius: 8px;
+    }
+    .shuffle:hover { background: var(--primary); border-color: var(--primary); color: var(--text); }
+
+    #error {
+      color: var(--danger);
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-top: 12px;
+      min-height: 1.3em;
+    }
+
+    #slides {
+      margin-top: 28px;
+      overflow-x: auto;
+      --slide-primary: #FAD4C0;
+    }
+
+    /* ── Color picker ── */
+    .color-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--secondary);
+      border-radius: 8px;
+      padding: 8px 14px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+    .color-wrap span {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--secondary);
+      white-space: nowrap;
+    }
+    input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      background: transparent;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+    input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+
+    /* ── Slide base — 1080×1080 bento card ── */
+    .slide {
+      width: 1080px;
+      height: 1080px;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 96px 96px 72px;
+      margin: 24px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      font-family: "Inter", system-ui, sans-serif;
+      box-shadow: 0 1px 3px rgba(17,24,39,.06), 0 8px 32px rgba(17,24,39,.07);
+    }
+
+    /* accent bar on left edge — bento visual anchor */
+    .slide::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 80px;
+      bottom: 80px;
+      width: 8px;
+      border-radius: 0 4px 4px 0;
+      background: var(--slide-primary);
+    }
+
+    /* Slide 1 — hook */
+    .hook {
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.06;
+      letter-spacing: -0.04em;
+    }
+
+    /* Slides 2-5 — tips */
+    .text {
+      font-size: 50px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    /* ghost step number */
+    .step {
+      position: absolute;
+      top: 28px;
+      right: 64px;
+      font-size: 160px;
+      font-weight: 900;
+      color: var(--slide-primary);
+      opacity: 0.35;
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    /* brand tag */
+    .brand {
+      position: absolute;
+      bottom: 44px;
+      left: 96px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Code slide — dark inversion ── */
+    .slide-code {
+      background: var(--text);
+      justify-content: flex-start;
+      padding-top: 80px;
+    }
+
+    .slide-code::before {
+      background: var(--slide-primary);
+    }
+
+    .code-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: var(--slide-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 36px;
+    }
+
+    .slide-code pre { flex: 1; overflow: hidden; }
+
+    .slide-code code {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      line-height: 1.72;
+      color: var(--surface);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .slide-code .brand { color: var(--secondary); }
+
+    /* ── Output area ── */
+    #caption, #tags {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Dev Carousel Generator</h1>
+<p class="subtitle">Leave the topic blank to get a random dev topic.</p>
+
+<div class="controls">
+  <input
+    type="text"
+    id="topic"
+    placeholder="Loading..."
+    autocomplete="off"
+  />
+  <button class="shuffle" onclick="randomizeTopic()" title="Shuffle topic">↻</button>
+  <label class="color-wrap" title="Slide accent color">
+    <span>Accent</span>
+    <input type="color" id="primaryColor" value="#FAD4C0">
+  </label>
+  <select id="provider">
+    <option value="claude">Claude</option>
+    <option value="hf">HuggingFace (Free)</option>
+  </select>
+  <button id="generateBtn" class="primary" onclick="generate()">Generate</button>
+  <button class="accent" onclick="downloadSlides()">Download All</button>
+</div>
+
+<div id="error"></div>
+<div id="slides"></div>
+
+<h2>Caption</h2>
+<p id="caption"></p>
+<button class="copy-btn" onclick="copy('caption')">Copy Caption</button>
+
+<h2>Hashtags</h2>
+<p id="tags"></p>
+<button class="copy-btn" onclick="copy('tags')">Copy Hashtags</button>
+
+</body>
+</html>
