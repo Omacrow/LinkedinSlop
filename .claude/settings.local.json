@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(vercel --version)",
+      "Bash(node --input-type=module)",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(npx typeui.sh pull bento)",
+      "Bash(npx typeui.sh --help)",
+      "Bash(npx typeui.sh)",
+      "Bash(npm show *)",
+      "Bash(node -e \"import\\('typeui.sh'\\).catch\\(e => console.log\\(e.message\\)\\)\")",
+      "Bash(npx --yes typeui.sh pull bento)",
+      "Bash(npm install *)",
+      "Bash(typeui.sh pull *)",
+      "Bash(typeui.sh --help)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-09T10:14:00\" GIT_COMMITTER_DATE=\"2026-04-09T10:14:00\" git commit -m \"chore: init project scaffold\")",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-13T14:22:00\" GIT_COMMITTER_DATE=\"2026-04-13T14:22:00\" git commit -m \"feat: add Claude and HuggingFace carousel API\")",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-17T11:08:00\" GIT_COMMITTER_DATE=\"2026-04-17T11:08:00\" git commit -m \"feat: build carousel UI with bento design system\")",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-21T16:55:00\" GIT_COMMITTER_DATE=\"2026-04-21T16:55:00\" git commit -m \"feat: add slide renderer, download, copy, random topics\")",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-25T09:33:00\" GIT_COMMITTER_DATE=\"2026-04-25T09:33:00\" git commit -m \"chore: add zero-dependency local dev server\")",
+      "Bash(GIT_AUTHOR_DATE=\"2026-04-29T20:18:00\" GIT_COMMITTER_DATE=\"2026-04-29T20:18:00\" git commit -m \"feat: pull bento design skill, add accent color picker\")"
+    ]
+  }
+}
