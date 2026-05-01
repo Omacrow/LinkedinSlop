@@ -1,4 +1,4 @@
-# LinkedIn Carousel Generator
+# LinkedIn AISlop Generator
 
 Generate LinkedIn carousel posts using Claude AI or HuggingFace. Pick a topic, choose an accent color, download the slides as PNG.
 
