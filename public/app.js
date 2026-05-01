@@ -154,10 +154,7 @@ async function copy(id) {
 
 async function downloadSlides() {
   const slides = document.querySelectorAll(".slide");
-  if (slides.length === 0) {
-    alert("Generate slides first.");
-    return;
-  }
+  if (slides.length === 0) { alert("Generate slides first."); return; }
 
   for (let i = 0; i < slides.length; i++) {
     const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true });
@@ -166,4 +163,21 @@ async function downloadSlides() {
     link.href = canvas.toDataURL();
     link.click();
   }
+}
+
+async function downloadPDF() {
+  const slides = document.querySelectorAll(".slide");
+  if (slides.length === 0) { alert("Generate slides first."); return; }
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1080, 1080] });
+
+  for (let i = 0; i < slides.length; i++) {
+    const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true });
+    const img = canvas.toDataURL("image/jpeg", 0.92);
+    if (i > 0) pdf.addPage([1080, 1080]);
+    pdf.addImage(img, "JPEG", 0, 0, 1080, 1080);
+  }
+
+  pdf.save("carousel.pdf");
 }
