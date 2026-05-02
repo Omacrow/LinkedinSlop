@@ -3,25 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dev Carousel Generator</title>
+  <title>LinkedIn Carousel Generator</title>
 
-  <!-- Bento design system: Inter (primary/display) + JetBrains Mono (mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+  <!-- Swiper -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script defer src="app.js"></script>
 
   <style>
-    /* ── Bento design tokens ── */
+    /* ── Design tokens ── */
     :root {
       --primary:   #FAD4C0;
       --secondary: #80A1C1;
       --surface:   #FFF5E6;
       --text:      #111827;
       --danger:    #DC2626;
+      --radius:    8px;
+      --border:    1.5px solid #D1D5DB;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,35 +35,153 @@
       background: var(--surface);
       color: var(--text);
       font-family: "Inter", system-ui, sans-serif;
-      padding: 48px 36px;
-      max-width: 1240px;
+      padding: 40px 36px 80px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
     /* ── Page header ── */
+    .page-header {
+      margin-bottom: 36px;
+    }
     h1 {
-      font-size: 2rem;
+      font-size: 1.85rem;
       font-weight: 800;
       color: var(--text);
       letter-spacing: -0.04em;
       margin-bottom: 4px;
     }
-
     .subtitle {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--secondary);
       font-weight: 500;
-      margin-bottom: 32px;
     }
 
-    h2 {
-      font-size: 0.7rem;
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 0.65rem;
       font-weight: 700;
       color: var(--secondary);
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      margin: 32px 0 8px;
+      margin: 28px 0 8px;
     }
+
+    /* ── Inputs ── */
+    input[type="text"] {
+      padding: 10px 14px;
+      border: var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus { border-color: var(--text); }
+    input[type="text"]::placeholder { color: var(--secondary); opacity: 0.55; }
+
+    select {
+      padding: 10px 14px;
+      border: var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.875rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* ── Buttons ── */
+    button {
+      padding: 10px 18px;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    button:active    { transform: scale(0.97); }
+    button:disabled  { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-primary { background: var(--text); color: #fff; padding: 10px 24px; font-weight: 700; }
+    .btn-primary:not(:disabled):hover { opacity: 0.82; }
+
+    .btn-accent { background: var(--primary); color: var(--text); }
+    .btn-accent:not(:disabled):hover { opacity: 0.8; }
+
+    .btn-outline {
+      background: transparent;
+      border: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:not(:disabled):hover { background: var(--text); color: #fff; border-color: var(--text); }
+
+    .btn-ghost {
+      background: transparent;
+      border: var(--border);
+      color: var(--secondary);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--text); }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid #D1D5DB;
+      color: var(--secondary);
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      border-radius: 6px;
+    }
+    .copy-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── Skills row ── */
+    .skills-row {
+      display: flex;
+      gap: 8px;
+    }
+    .skills-row input { flex: 1; max-width: 380px; }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--primary);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 8px 4px 12px;
+      border-radius: 999px;
+    }
+    .chip-remove {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 0;
+      line-height: 1;
+      opacity: 0.45;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s;
+    }
+    .chip-remove:hover { opacity: 1; }
 
     /* ── Controls ── */
     .controls {
@@ -67,112 +190,70 @@
       gap: 8px;
       align-items: stretch;
     }
+    #topic { flex: 1; min-width: 200px; }
 
-    input[type="text"] {
-      flex: 1;
-      min-width: 260px;
-      padding: 11px 16px;
-      border: 1.5px solid var(--secondary);
-      border-radius: 8px;
-      background: #ffffff;
-      color: var(--text);
-      font-family: "Inter", system-ui, sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input[type="text"]:focus  { border-color: var(--primary); }
-    input[type="text"]::placeholder { color: var(--secondary); opacity: 0.6; }
-
-    select {
-      padding: 11px 16px;
-      border: 1.5px solid var(--secondary);
-      border-radius: 8px;
-      background: #ffffff;
-      color: var(--text);
-      font-family: "Inter", system-ui, sans-serif;
-      font-size: 0.9rem;
-      cursor: pointer;
-      outline: none;
-    }
-
-    button {
-      padding: 11px 20px;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      font-family: "Inter", system-ui, sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-    button:active    { transform: scale(0.98); }
-    button:disabled  { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-    /* primary: dark for strong contrast */
-    .primary { background: var(--text); color: var(--surface); }
-    .primary:not(:disabled):hover { opacity: 0.82; }
-
-    /* accent: warm peach */
-    .accent { background: var(--primary); color: var(--text); }
-    .accent:not(:disabled):hover { opacity: 0.82; }
-
-    .outline {
+    .shuffle-btn {
       background: transparent;
-      border: 1.5px solid var(--text);
-      color: var(--text);
-    }
-    .outline:not(:disabled):hover { background: var(--text); color: var(--surface); }
-
-    .copy-btn {
-      background: transparent;
-      border: 1.5px solid var(--secondary);
+      border: var(--border);
       color: var(--secondary);
-      padding: 6px 14px;
-      font-size: 0.78rem;
-      margin-top: 8px;
-      border-radius: 6px;
-    }
-    .copy-btn:hover { border-color: var(--primary); color: var(--text); }
-
-    .shuffle {
-      background: transparent;
-      border: 1.5px solid var(--secondary);
-      color: var(--secondary);
-      padding: 11px 15px;
-      font-size: 1.1rem;
+      padding: 10px 13px;
+      font-size: 1rem;
       line-height: 1;
-      border-radius: 8px;
+      border-radius: var(--radius);
+      flex-shrink: 0;
     }
-    .shuffle:hover { background: var(--primary); border-color: var(--primary); color: var(--text); }
+    .shuffle-btn:hover { background: var(--primary); border-color: var(--primary); color: var(--text); }
 
-    #error {
-      color: var(--danger);
-      font-size: 0.88rem;
+    /* Image upload button */
+    .img-upload-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border: 1.5px dashed #D1D5DB;
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--secondary);
+      font-size: 0.82rem;
+      font-family: "Inter", system-ui, sans-serif;
       font-weight: 600;
-      margin-top: 12px;
-      min-height: 1.3em;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .img-upload-label:hover { border-color: var(--text); color: var(--text); }
+    .img-upload-label.has-image { border-style: solid; border-color: var(--primary); color: var(--text); }
+
+    /* Image preview */
+    .img-preview-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    #imagePreviewContent {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      border: 2px solid var(--primary);
+      background-size: cover;
+      background-position: center;
+      background-color: #f3f4f6;
     }
 
-    #slides {
-      margin-top: 28px;
-      overflow-x: auto;
-      --slide-primary: #FAD4C0;
-    }
-
-    /* ── Color picker ── */
+    /* Color picker */
     .color-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
-      border: 1.5px solid var(--secondary);
-      border-radius: 8px;
-      padding: 8px 14px;
-      background: #ffffff;
+      gap: 7px;
+      border: var(--border);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      background: #fff;
       cursor: pointer;
     }
     .color-wrap span {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       color: var(--secondary);
       white-space: nowrap;
@@ -180,8 +261,8 @@
     input[type="color"] {
       -webkit-appearance: none;
       appearance: none;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border: none;
       border-radius: 50%;
       cursor: pointer;
@@ -192,87 +273,224 @@
     input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
     input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
 
-    /* ── Slide base — 1080×1080 bento card ── */
+    .brand-input { width: 120px; font-size: 0.83rem; }
+
+    /* ── Style picker ── */
+    .style-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .style-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 12px;
+      border: var(--border);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.1s;
+    }
+    .style-btn:hover { border-color: var(--secondary); }
+    .style-btn.active {
+      border-color: var(--text);
+      box-shadow: 0 0 0 1.5px var(--text);
+      background: var(--surface);
+    }
+    .style-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    /* ── Error ── */
+    #error {
+      color: var(--danger);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 10px;
+      min-height: 1.2em;
+    }
+
+    /* ── Swiper carousel area ── */
+    .carousel-area {
+      margin-top: 32px;
+    }
+
+    .carousel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .slide-counter {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--secondary);
+      letter-spacing: 0.05em;
+    }
+    .carousel-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    #slideSwiper {
+      width: 100%;
+      overflow: hidden;
+      /* CSS variable for all slides */
+      --slide-primary: #FAD4C0;
+    }
+
+    .swiper-wrapper { align-items: flex-start; }
+
+    .swiper-slide {
+      width: 1080px !important;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Swiper nav buttons */
+    .swiper-button-prev,
+    .swiper-button-next {
+      color: var(--text);
+      background: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      top: 50%;
+    }
+    .swiper-button-prev::after,
+    .swiper-button-next::after {
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .swiper-button-prev { left: 8px; }
+    .swiper-button-next { right: 8px; }
+
+    /* Swiper pagination */
+    .swiper-pagination {
+      position: static;
+      margin-top: 16px;
+    }
+    .swiper-pagination-bullet {
+      background: var(--secondary);
+      opacity: 0.4;
+    }
+    .swiper-pagination-bullet-active {
+      background: var(--text);
+      opacity: 1;
+    }
+
+    /* ── Output ── */
+    .output-area {
+      margin-top: 28px;
+    }
+    .output-block {
+      margin-bottom: 20px;
+    }
+    .output-block p {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+      margin-top: 6px;
+    }
+
+    /* ════════════════════════════════════════════════════
+       SLIDE BASE — 1080×1080
+    ════════════════════════════════════════════════════ */
     .slide {
       width: 1080px;
       height: 1080px;
       background: #ffffff;
       border-radius: 28px;
       padding: 96px 96px 72px;
-      margin: 24px 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
+      overflow: hidden;
       font-family: "Inter", system-ui, sans-serif;
       box-shadow: 0 1px 3px rgba(17,24,39,.06), 0 8px 32px rgba(17,24,39,.07);
     }
 
-    /* accent bar on left edge — bento visual anchor */
+    /* left accent bar */
     .slide::before {
       content: "";
       position: absolute;
-      left: 0;
-      top: 80px;
-      bottom: 80px;
+      left: 0; top: 80px; bottom: 80px;
       width: 8px;
       border-radius: 0 4px 4px 0;
       background: var(--slide-primary);
+      z-index: 2;
     }
 
-    /* Slide 1 — hook */
     .hook {
       font-size: 80px;
       font-weight: 900;
       color: var(--text);
       line-height: 1.06;
       letter-spacing: -0.04em;
+      position: relative; z-index: 1;
     }
-
-    /* Slides 2-5 — tips */
     .text {
       font-size: 50px;
       font-weight: 500;
       color: var(--text);
       line-height: 1.35;
       letter-spacing: -0.01em;
+      position: relative; z-index: 1;
     }
-
-    /* ghost step number */
     .step {
       position: absolute;
-      top: 28px;
-      right: 64px;
+      top: 28px; right: 64px;
       font-size: 160px;
       font-weight: 900;
       color: var(--slide-primary);
       opacity: 0.35;
       line-height: 1;
       letter-spacing: -0.06em;
+      z-index: 1;
     }
-
-    /* brand tag */
     .brand {
       position: absolute;
-      bottom: 44px;
-      left: 96px;
+      bottom: 44px; left: 96px;
       font-size: 18px;
       font-weight: 600;
       color: var(--secondary);
       letter-spacing: 0.02em;
+      z-index: 2;
     }
 
-    /* ── Code slide — dark inversion ── */
+    /* Image background on hook slide */
+    .slide-img-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .slide-img-bg::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.52);
+    }
+    .has-image .hook,
+    .has-image .brand { color: #fff !important; }
+
+    /* Code slide */
     .slide-code {
       background: var(--text);
       justify-content: flex-start;
       padding-top: 80px;
     }
-
-    .slide-code::before {
-      background: var(--slide-primary);
-    }
-
+    .slide-code::before { background: var(--slide-primary); }
     .code-label {
       font-family: "JetBrains Mono", monospace;
       font-size: 18px;
@@ -280,10 +498,9 @@
       text-transform: uppercase;
       letter-spacing: 0.14em;
       margin-bottom: 36px;
+      position: relative; z-index: 1;
     }
-
-    .slide-code pre { flex: 1; overflow: hidden; }
-
+    .slide-code pre { flex: 1; overflow: hidden; position: relative; z-index: 1; }
     .slide-code code {
       font-family: "JetBrains Mono", monospace;
       font-size: 28px;
@@ -292,55 +509,223 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
-
     .slide-code .brand { color: var(--secondary); }
 
-    /* ── Output area ── */
-    #caption, #tags {
-      font-size: 0.92rem;
-      line-height: 1.75;
-      color: var(--text);
-      white-space: pre-wrap;
+    /* Key insight slide */
+    .slide-insight {
+      background: #111827;
+      justify-content: center;
     }
+    .slide-insight::before { background: var(--slide-primary); }
+    .insight-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      color: var(--slide-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 48px;
+      font-weight: 700;
+      position: relative; z-index: 1;
+    }
+    .insight-text {
+      font-size: 52px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      margin: 0; padding: 0; border: none;
+      position: relative; z-index: 1;
+    }
+    .slide-insight .brand { color: var(--secondary); }
+
+    /* ════════════════════════════════════════════════════
+       STYLE THEMES — all accent colors use var(--slide-primary)
+    ════════════════════════════════════════════════════ */
+
+    /* Clean */
+    .style-clean { border-radius: 4px; box-shadow: none; border: 1px solid #E5E7EB; }
+    .style-clean::before { display: none; }
+    .style-clean::after {
+      content: ""; position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+      background: var(--slide-primary);
+      border-radius: 4px 4px 0 0; z-index: 2;
+    }
+    .style-clean .step { color: #E5E7EB; opacity: 1; }
+    .slide-code.style-clean,
+    .slide-insight.style-clean { border-radius: 4px; border-color: transparent; }
+
+    /* Paper */
+    .style-paper { background: #F7F3EB; border-radius: 4px; border: 2px solid #D4C5A9; box-shadow: 3px 3px 12px rgba(61,43,31,0.1); }
+    .style-paper::before { background: var(--slide-primary); }
+    .style-paper .hook { color: #3D2B1F; font-family: "Playfair Display", Georgia, serif; }
+    .style-paper .text { color: #3D2B1F; }
+    .style-paper .step { color: #D4C5A9; opacity: 1; }
+    .style-paper .brand { color: var(--slide-primary); }
+    .style-paper .code-label { color: var(--slide-primary); }
+    .slide-code.style-paper { background: #2A1F17; border-color: #D4C5A9; }
+    .slide-insight.style-paper { background: #2A1F17; border-color: #D4C5A9; }
+
+    /* Neumorphism */
+    .style-neumorphism { background: #E8ECF1; border-radius: 32px; box-shadow: 20px 20px 40px #C4C9D4, -20px -20px 40px #fff; border: none; }
+    .style-neumorphism::before { background: var(--slide-primary); }
+    .style-neumorphism .hook { color: #3D4F6B; }
+    .style-neumorphism .text { color: #4A5568; }
+    .style-neumorphism .step { color: #BEC4CF; opacity: 1; }
+    .style-neumorphism .brand { color: #8A9BB0; }
+    .slide-code.style-neumorphism { background: #D6DBE4; box-shadow: inset 8px 8px 16px #B8BCCA, inset -8px -8px 16px #fff; border-radius: 32px; }
+    .slide-insight.style-neumorphism { background: #D6DBE4; box-shadow: inset 8px 8px 16px #B8BCCA, inset -8px -8px 16px #fff; border-radius: 32px; }
+    .slide-insight.style-neumorphism .insight-text { color: #3D4F6B; }
+
+    /* Glassmorphism */
+    .style-glassmorphism { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(31,38,135,0.37); border-radius: 24px; }
+    .style-glassmorphism::before { background: rgba(255,255,255,0.55); }
+    .style-glassmorphism .hook { color: #fff; }
+    .style-glassmorphism .text { color: rgba(255,255,255,0.92); }
+    .style-glassmorphism .step { color: rgba(255,255,255,0.12); opacity: 1; }
+    .style-glassmorphism .brand { color: rgba(255,255,255,0.6); }
+    .slide-code.style-glassmorphism { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+    .slide-insight.style-glassmorphism { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+
+    /* Neobrutalism */
+    .style-neobrutalism { background: #FAFAFA; border-radius: 0; border: 5px solid #111827; box-shadow: 12px 12px 0 #111827; margin-right: 16px; }
+    .style-neobrutalism::before { display: none; }
+    .style-neobrutalism::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 18px; background: var(--slide-primary); z-index: 2; }
+    .style-neobrutalism .hook { font-size: 84px; text-transform: uppercase; letter-spacing: -0.03em; }
+    .style-neobrutalism .step { color: #111827; opacity: 0.08; font-size: 200px; }
+    .style-neobrutalism .brand { color: #111827; font-weight: 800; font-size: 20px; }
+    .slide-code.style-neobrutalism { background: #111827; border-color: #111827; box-shadow: 12px 12px 0 var(--slide-primary); }
+    .slide-insight.style-neobrutalism { background: #111827; border-color: #111827; box-shadow: 12px 12px 0 var(--slide-primary); }
+
+    /* Bold */
+    .style-bold { background: #0A0A0A; border-radius: 0; box-shadow: none; border: none; }
+    .style-bold::before { width: 14px; background: var(--slide-primary); }
+    .style-bold .hook { color: #fff; font-size: 88px; }
+    .style-bold .text { color: #F0F0F0; }
+    .style-bold .step { color: var(--slide-primary); opacity: 0.4; font-size: 200px; }
+    .style-bold .brand { color: rgba(255,255,255,0.35); }
+    .slide-code.style-bold { background: #141414; }
+    .slide-insight.style-bold { background: #141414; }
+
+    /* Premium */
+    .style-premium { background: #080808; border-radius: 2px; border: 1px solid #222; box-shadow: 0 0 80px rgba(0,0,0,0.4); }
+    .style-premium::before { background: var(--slide-primary); width: 4px; }
+    .style-premium .hook { color: #fff; font-size: 76px; letter-spacing: -0.05em; }
+    .style-premium .text { color: #CCC; }
+    .style-premium .step { color: var(--slide-primary); opacity: 0.2; }
+    .style-premium .brand { color: var(--slide-primary); font-size: 16px; letter-spacing: 0.06em; }
+    .style-premium .code-label { color: var(--slide-primary); }
+    .style-premium .insight-label { color: var(--slide-primary); }
+    .slide-code.style-premium { background: #050505; border-color: #222; }
+    .slide-insight.style-premium { background: #050505; border-color: #222; }
+
+    /* Artistic */
+    .style-artistic { background: #fff; border-radius: 16px; overflow: hidden; border: none; }
+    .style-artistic::before { display: none; }
+    .style-artistic::after { content: ""; position: absolute; top: 0; left: 0; width: 260px; height: 260px; background: var(--slide-primary); border-radius: 0 0 60% 0; z-index: 0; opacity: 0.75; }
+    .style-artistic .hook { position: relative; z-index: 1; }
+    .style-artistic .text { position: relative; z-index: 1; }
+    .style-artistic .step { color: var(--slide-primary); opacity: 0.45; font-size: 200px; z-index: 1; }
+    .style-artistic .brand { color: #9CA3AF; z-index: 1; }
+    .slide-code.style-artistic { background: #111827; border-radius: 16px; }
+    .slide-code.style-artistic::after { display: none; }
+    .slide-insight.style-artistic { background: #111827; border-radius: 16px; }
+    .slide-insight.style-artistic::after { display: none; }
+
+    /* Cafe */
+    .style-cafe { background: #2C1810; border-radius: 16px; border: 1px solid #4A2C1A; }
+    .style-cafe::before { background: var(--slide-primary); }
+    .style-cafe .hook { color: #F5DEB3; font-size: 76px; }
+    .style-cafe .text { color: #E8D5B0; }
+    .style-cafe .step { color: #4A2C1A; opacity: 1; }
+    .style-cafe .brand { color: var(--slide-primary); }
+    .style-cafe .code-label { color: var(--slide-primary); }
+    .style-cafe .insight-label { color: var(--slide-primary); }
+    .slide-code.style-cafe { background: #1A0E08; border-color: #4A2C1A; }
+    .slide-insight.style-cafe { background: #1A0E08; border-color: #4A2C1A; }
+    .slide-insight.style-cafe .insight-text { color: #F5DEB3; }
   </style>
 </head>
 
 <body>
 
-<h1>Dev Carousel Generator</h1>
-<p class="subtitle">Leave the topic blank to get a random dev topic.</p>
+<div class="page-header">
+  <h1>LinkedIn Carousel Generator</h1>
+  <p class="subtitle">Add your skills for personalized topics — works for any field, not just dev.</p>
+</div>
 
+<!-- ── Skills ── -->
+<p class="section-label">Your Skills</p>
+<div class="skills-row">
+  <input type="text" id="skillInput" placeholder="e.g. UI/UX Design, Marketing, Finance..." autocomplete="off">
+  <button class="btn-outline" onclick="addSkill()">Add</button>
+</div>
+<div id="skillChips" class="chip-row"></div>
+
+<!-- ── Topic + controls ── -->
+<p class="section-label">Topic &amp; Settings</p>
 <div class="controls">
-  <input
-    type="text"
-    id="topic"
-    placeholder="Loading..."
-    autocomplete="off"
-  />
-  <button class="shuffle" onclick="randomizeTopic()" title="Shuffle topic">↻</button>
+  <input type="text" id="topic" placeholder="Loading..." autocomplete="off">
+  <button class="shuffle-btn" onclick="randomizeTopic()" title="Shuffle topic">↻</button>
+  <label class="img-upload-label" id="imageLabel" title="Add background image to hook slide">
+    <input type="file" id="imageUpload" accept="image/*" style="display:none">
+    <span id="imageLabelText">+ Image</span>
+  </label>
   <label class="color-wrap" title="Slide accent color">
     <span>Accent</span>
     <input type="color" id="primaryColor" value="#FAD4C0">
   </label>
+  <input type="text" id="brandName" value="Umer.dev" placeholder="Brand" class="brand-input" title="Brand name on slides">
   <select id="provider">
     <option value="claude">Claude</option>
     <option value="hf">HuggingFace (Free)</option>
   </select>
-  <button id="generateBtn" class="primary" onclick="generate()">Generate</button>
-  <button class="accent" onclick="downloadSlides()">Download PNGs</button>
-  <button class="outline" onclick="downloadPDF()">Download PDF</button>
+  <button id="generateBtn" class="btn-primary" onclick="generate()">Generate</button>
 </div>
 
+<!-- Image preview (hidden until uploaded) -->
+<div id="imagePreviewWrap" hidden class="img-preview-row">
+  <div id="imagePreviewContent"></div>
+  <button class="btn-ghost" onclick="clearImage()" style="padding:6px 12px;font-size:0.78rem;">Remove</button>
+</div>
+
+<!-- ── Style picker ── -->
+<p class="section-label">Slide Style</p>
+<div id="stylePicker" class="style-picker"></div>
+
 <div id="error"></div>
-<div id="slides"></div>
 
-<h2>Caption</h2>
-<p id="caption"></p>
-<button class="copy-btn" onclick="copy('caption')">Copy Caption</button>
+<!-- ── Carousel ── -->
+<div class="carousel-area" id="carouselArea" style="display:none">
+  <div class="carousel-header">
+    <span class="slide-counter" id="slideCounter">1 / 6</span>
+    <div class="carousel-actions">
+      <button class="btn-accent" onclick="downloadSlides()">Download PNGs</button>
+      <button class="btn-outline" onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
 
-<h2>Hashtags</h2>
-<p id="tags"></p>
-<button class="copy-btn" onclick="copy('tags')">Copy Hashtags</button>
+  <div class="swiper" id="slideSwiper">
+    <div class="swiper-wrapper" id="slides"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+</div>
+
+<!-- ── Output ── -->
+<div class="output-area" id="outputArea" style="display:none">
+  <div class="output-block">
+    <p class="section-label">Caption</p>
+    <p id="caption"></p>
+    <button class="copy-btn" onclick="copy('caption')">Copy Caption</button>
+  </div>
+  <div class="output-block">
+    <p class="section-label">Hashtags</p>
+    <p id="tags"></p>
+    <button class="copy-btn" onclick="copy('tags')">Copy Hashtags</button>
+  </div>
+</div>
 
 </body>
 </html>
