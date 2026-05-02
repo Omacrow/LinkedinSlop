@@ -3,6 +3,7 @@ let userSkills = [];
 let currentStyle = "bento";
 let uploadedImage = null;
 let swiperInstance = null;
+let loadedTemplates = {};   // { styleName: { css, swatchColor, fonts, ... } }
 
 // ── Topic data ─────────────────────────────────────────────────────
 const TOPIC_TEMPLATES = [
@@ -49,8 +50,8 @@ const DEFAULT_TOPICS = [
   "Express error handling done right",
 ];
 
-// ── Style definitions ──────────────────────────────────────────────
-const STYLES = [
+// Built-in styles (CSS defined in index.html, always available)
+const BUILTIN_STYLES = [
   { id: "bento",         label: "Bento",      swatch: "#FAD4C0" },
   { id: "clean",         label: "Clean",      swatch: "#F3F4F6" },
   { id: "paper",         label: "Paper",      swatch: "#F7F3EB" },
@@ -64,19 +65,86 @@ const STYLES = [
 ];
 
 // ── Init ───────────────────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", () => {
-  renderStylePicker();
+window.addEventListener("DOMContentLoaded", async () => {
+  // Render built-in styles immediately
+  renderStylePicker(BUILTIN_STYLES);
   updateTopicPlaceholder();
 
   document.getElementById("primaryColor").addEventListener("input", (e) => {
     document.getElementById("slideSwiper").style.setProperty("--slide-primary", e.target.value);
   });
-
   document.getElementById("imageUpload").addEventListener("change", handleImageUpload);
   document.getElementById("skillInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") { e.preventDefault(); addSkill(); }
   });
+
+  // Load templates in background — updates style picker with extra styles + green dots
+  loadTemplates();
 });
+
+// ── Template loading ───────────────────────────────────────────────
+async function loadTemplates() {
+  const statusEl = document.getElementById("templateLoadStatus");
+  try {
+    statusEl.textContent = "loading styles...";
+    const res = await fetch("/api/templates");
+    if (!res.ok) return;
+    loadedTemplates = await res.json();
+
+    const count = Object.keys(loadedTemplates).length;
+    if (count === 0) { statusEl.textContent = ""; return; }
+
+    // Inject each template CSS into its own <style> tag
+    for (const [id, t] of Object.entries(loadedTemplates)) {
+      if (t.css) injectCss("template-styles-" + id, t.css);
+    }
+
+    // Build combined style list: built-ins + all skills (cached or not)
+    const builtinIds = new Set(BUILTIN_STYLES.map(s => s.id));
+    const extraStyles = Object.entries(loadedTemplates)
+      .filter(([id]) => !builtinIds.has(id))
+      .map(([id, t]) => ({
+        id,
+        label: t.label || capitalize(id),
+        swatch: t.swatchColor || "#888888",
+        cached: t.cached === true || !!t.css,
+      }));
+
+    const cachedCount = extraStyles.filter(s => s.cached).length;
+    const allStyles = [...BUILTIN_STYLES, ...extraStyles];
+    renderStylePicker(allStyles);
+    statusEl.textContent = `${cachedCount} cached · ${extraStyles.length - cachedCount} on-demand`;
+  } catch {
+    statusEl.textContent = "";
+  }
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ── Style picker ───────────────────────────────────────────────────
+function renderStylePicker(styles) {
+  document.getElementById("stylePicker").innerHTML = styles.map(s => {
+    const isBuiltin = BUILTIN_STYLES.some(b => b.id === s.id);
+    const isCached = isBuiltin || s.cached || (loadedTemplates[s.id] && loadedTemplates[s.id].css);
+    const dotClass = isCached ? " cached" : " on-demand";
+    const tooltip = isCached
+      ? "CSS cached — only content generated"
+      : "First use: CSS generated from typeui.sh SKILL.md, then cached";
+    return `<button class="style-btn${s.id === currentStyle ? " active" : ""}${dotClass}"
+      data-style="${s.id}"
+      onclick="setStyle('${s.id}')"
+      title="${tooltip}">
+      <span class="style-swatch" style="background:${s.swatch}"></span>${s.label}
+    </button>`;
+  }).join("");
+}
+
+function setStyle(id) {
+  currentStyle = id;
+  document.querySelectorAll(".style-btn").forEach(b => b.classList.toggle("active", b.dataset.style === id));
+}
 
 // ── Skills ─────────────────────────────────────────────────────────
 function addSkill() {
@@ -126,19 +194,6 @@ function randomizeTopic() {
   input.focus();
 }
 
-// ── Style picker ───────────────────────────────────────────────────
-function renderStylePicker() {
-  document.getElementById("stylePicker").innerHTML = STYLES.map(s => `
-    <button class="style-btn${s.id === currentStyle ? " active" : ""}" data-style="${s.id}" onclick="setStyle('${s.id}')">
-      <span class="style-swatch" style="background:${s.swatch}"></span>${s.label}
-    </button>`).join("");
-}
-
-function setStyle(id) {
-  currentStyle = id;
-  document.querySelectorAll(".style-btn").forEach(b => b.classList.toggle("active", b.dataset.style === id));
-}
-
 // ── Image upload ───────────────────────────────────────────────────
 function handleImageUpload(e) {
   const file = e.target.files[0];
@@ -146,7 +201,6 @@ function handleImageUpload(e) {
   const reader = new FileReader();
   reader.onload = (ev) => {
     uploadedImage = ev.target.result;
-    // Use background-image on a div — avoids broken <img> states
     const preview = document.getElementById("imagePreviewContent");
     preview.style.backgroundImage = `url("${uploadedImage.replace(/"/g, '\\"')}")`;
     preview.style.backgroundSize = "cover";
@@ -167,7 +221,7 @@ function clearImage() {
   document.getElementById("imageLabelText").textContent = "+ Image";
 }
 
-// ── Generate ───────────────────────────────────────────────────────
+// ── Standard generate ──────────────────────────────────────────────
 async function generate() {
   const provider = document.getElementById("provider").value;
   const topic = document.getElementById("topic").value.trim();
@@ -189,11 +243,18 @@ async function generate() {
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || `Request failed (${res.status})`);
 
-    renderSlides(data, accentColor);
+    // First-use: inject freshly generated CSS + cache it locally so re-renders work
+    if (data.designCss) {
+      injectCss("template-styles-" + currentStyle, data.designCss);
+      if (Array.isArray(data.fonts) && data.fonts.length) loadTemplateFonts(currentStyle, data.fonts);
+      // Also store in loadedTemplates so subsequent renders don't need a reload
+      loadedTemplates[currentStyle] = { css: data.designCss, fonts: data.fonts || [] };
+    } else {
+      injectTemplateCSS(currentStyle);
+    }
 
-    document.getElementById("caption").textContent = data.caption;
-    document.getElementById("tags").textContent = data.hashtags.join(" ");
-    document.getElementById("outputArea").style.display = "block";
+    renderSlides(data, accentColor, currentStyle);
+    showOutput(data, data.templateUsed);
     updateTopicPlaceholder();
   } catch (err) {
     errEl.textContent = `Error: ${err.message}`;
@@ -203,12 +264,112 @@ async function generate() {
   }
 }
 
+// ── Original design generate ───────────────────────────────────────
+async function generateOriginal() {
+  const provider = document.getElementById("provider").value;
+  const words = document.getElementById("designWords").value.trim();
+  const topic = document.getElementById("topic").value.trim();
+  const accentColor = document.getElementById("primaryColor").value;
+  const btn = document.getElementById("originalBtn");
+  const errEl = document.getElementById("error");
+
+  if (!words) {
+    errEl.textContent = "Enter 3 design words first (e.g. 'dark luxury minimal').";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Designing...";
+  errEl.textContent = "";
+
+  try {
+    const res = await fetch(`/api/generate-original?provider=${provider}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ words, topic, skills: userSkills }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || `Request failed (${res.status})`);
+
+    // Inject the one-off design CSS into the page for this session
+    if (data.designCss) {
+      let customStyle = document.getElementById("custom-design-style");
+      if (!customStyle) {
+        customStyle = document.createElement("style");
+        customStyle.id = "custom-design-style";
+        document.head.appendChild(customStyle);
+      }
+      customStyle.textContent = data.designCss;
+    }
+
+    // Load any requested Google Fonts
+    if (Array.isArray(data.fonts) && data.fonts.length > 0) {
+      const fontQuery = data.fonts.map(f => f.replace(/ /g, "+")).join("&family=");
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = `https://fonts.googleapis.com/css2?family=${fontQuery}&display=swap`;
+      document.head.appendChild(link);
+    }
+
+    renderSlides(data, accentColor, "custom");
+    showOutput(data, false);
+    updateTopicPlaceholder();
+  } catch (err) {
+    errEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Design & Generate";
+  }
+}
+
+// ── Template CSS injection ─────────────────────────────────────────
+function injectCss(id, css) {
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("style");
+    el.id = id;
+    document.head.appendChild(el);
+  }
+  el.textContent = css;
+}
+
+function loadTemplateFonts(styleName, fonts) {
+  if (!fonts || fonts.length === 0) return;
+  const fontQuery = fonts.map(f => f.replace(/ /g, "+")).join("&family=");
+  if (!document.querySelector(`link[data-font="${styleName}"]`)) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.dataset.font = styleName;
+    link.href = `https://fonts.googleapis.com/css2?family=${fontQuery}&display=swap`;
+    document.head.appendChild(link);
+  }
+}
+
+function injectTemplateCSS(styleName) {
+  const tmpl = loadedTemplates[styleName];
+  if (!tmpl || !tmpl.css) return;
+  injectCss("template-styles-" + styleName, tmpl.css);
+  loadTemplateFonts(styleName, tmpl.fonts);
+}
+
+// ── Show output ────────────────────────────────────────────────────
+function showOutput(data, templateUsed) {
+  document.getElementById("caption").textContent = data.caption;
+  document.getElementById("tags").textContent = data.hashtags.join(" ");
+  document.getElementById("outputArea").style.display = "block";
+
+  const badge = document.getElementById("tokenBadge");
+  badge.textContent = templateUsed ? "cached style" : "style generated + cached";
+  badge.style.display = "inline";
+}
+
 // ── Slide rendering ────────────────────────────────────────────────
-function renderSlides(data, accentColor) {
+function renderSlides(data, accentColor, styleId) {
   const wrapper = document.getElementById("slides");
   wrapper.innerHTML = "";
 
-  const styleClass = `style-${currentStyle}`;
+  const styleClass = `style-${styleId}`;
   const brand = document.getElementById("brandName").value.trim() || "LinkedIn AI";
 
   const addSwiperSlide = (el) => {
@@ -294,22 +455,152 @@ function renderSlides(data, accentColor) {
     addSwiperSlide(insightSlide);
   }
 
-  // Set accent color on the swiper container
   document.getElementById("slideSwiper").style.setProperty("--slide-primary", accentColor);
-
-  // Show carousel
   document.getElementById("carouselArea").style.display = "block";
 
-  // Init Swiper after DOM update
-  requestAnimationFrame(() => initSwiper());
+  requestAnimationFrame(() => {
+    initSwiper();
+    initEditor();
+  });
+}
+
+// ── Slide Editor ───────────────────────────────────────────────────
+
+const QUICK_FONTS = [
+  "Inter", "Poppins", "Montserrat", "Raleway", "Oswald",
+  "Playfair Display", "Bebas Neue", "Space Grotesk", "DM Sans",
+  "Outfit", "Syne", "Merriweather", "Fraunces", "Nunito",
+  "Lato", "Roboto", "Righteous", "Comfortaa", "Bitter", "JetBrains Mono",
+];
+
+function initEditor() {
+  // Make all text elements directly editable
+  document.querySelectorAll(
+    ".slide .hook, .slide .text, .slide .brand, .slide .insight-text, .slide .code-label"
+  ).forEach(el => {
+    el.contentEditable = "true";
+    el.spellcheck = false;
+  });
+
+  // Render font quick-picks
+  document.getElementById("fontChips").innerHTML = QUICK_FONTS.map(f =>
+    `<button class="font-chip" style="font-family:'${f}',sans-serif" onclick="applyFont('${f}')">${f}</button>`
+  ).join("");
+
+  // Populate datalist
+  document.getElementById("fontList").innerHTML = QUICK_FONTS.map(f =>
+    `<option value="${f}">`
+  ).join("");
+
+  // Sync sliders to current rendered values
+  const hook = document.querySelector(".slide .hook");
+  if (hook) {
+    const sz = Math.round(parseFloat(getComputedStyle(hook).fontSize)) || 80;
+    document.getElementById("hookSizeSlider").value = sz;
+    document.getElementById("hookSizeVal").textContent = sz + "px";
+  }
+  const body = document.querySelector(".slide .text");
+  if (body) {
+    const sz = Math.round(parseFloat(getComputedStyle(body).fontSize)) || 50;
+    document.getElementById("bodySizeSlider").value = sz;
+    document.getElementById("bodySizeVal").textContent = sz + "px";
+  }
+
+  // Reset color pickers to their default state
+  document.getElementById("bgColorPicker").value = "#ffffff";
+  document.getElementById("hookColorPicker").value = "#111827";
+  document.getElementById("bodyColorPicker").value = "#111827";
+  document.getElementById("darkBgColorPicker").value = "#111827";
+  document.getElementById("brandColorPicker").value = "#80A1C1";
+  document.getElementById("stepColorPicker").value = "#FAD4C0";
+
+  document.getElementById("slideEditor").style.display = "block";
+}
+
+// Font loading via Google Fonts CSS API (no API key required)
+function loadGoogleFont(fontName) {
+  const id = `gfont-${fontName.replace(/ /g, "-")}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id = id;
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap`;
+  document.head.appendChild(link);
+}
+
+function applySelectedFont() {
+  const name = document.getElementById("fontInput").value.trim();
+  if (name) applyFont(name);
+}
+
+function applyFont(name) {
+  loadGoogleFont(name);
+  document.querySelectorAll(".slide .hook, .slide .text").forEach(el => {
+    el.style.fontFamily = `"${name}", sans-serif`;
+  });
+  document.querySelectorAll(".font-chip").forEach(btn =>
+    btn.classList.toggle("active", btn.textContent === name)
+  );
+  document.getElementById("fontInput").value = name;
+}
+
+function updateHookSize(val) {
+  document.querySelectorAll(".slide .hook").forEach(el => el.style.fontSize = val + "px");
+  document.getElementById("hookSizeVal").textContent = val + "px";
+}
+
+function updateBodySize(val) {
+  document.querySelectorAll(".slide .text").forEach(el => el.style.fontSize = val + "px");
+  document.getElementById("bodySizeVal").textContent = val + "px";
+}
+
+function updateHookColor(color) {
+  document.querySelectorAll(".slide .hook").forEach(el => el.style.color = color);
+}
+
+function updateBodyColor(color) {
+  document.querySelectorAll(".slide .text").forEach(el => el.style.color = color);
+}
+
+function updateBgColor(color) {
+  document.querySelectorAll(".slide:not(.slide-code):not(.slide-insight)").forEach(el => {
+    el.style.background = color;
+  });
+}
+
+function updateDarkBgColor(color) {
+  document.querySelectorAll(".slide-code, .slide-insight").forEach(el => {
+    el.style.background = color;
+  });
+}
+
+function updateBrandColor(color) {
+  document.querySelectorAll(".slide .brand").forEach(el => el.style.color = color);
+}
+
+function updateStepColor(color) {
+  document.querySelectorAll(".slide .step").forEach(el => el.style.color = color);
+}
+
+function resetEditorColors() {
+  document.querySelectorAll(".slide").forEach(el => {
+    el.style.background = "";
+    el.style.backgroundColor = "";
+  });
+  [".slide .hook", ".slide .text", ".slide .brand", ".slide .step"].forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => el.style.color = "");
+  });
+  document.getElementById("bgColorPicker").value = "#ffffff";
+  document.getElementById("hookColorPicker").value = "#111827";
+  document.getElementById("bodyColorPicker").value = "#111827";
+  document.getElementById("darkBgColorPicker").value = "#111827";
+  document.getElementById("brandColorPicker").value = "#80A1C1";
+  document.getElementById("stepColorPicker").value = "#FAD4C0";
 }
 
 // ── Swiper ─────────────────────────────────────────────────────────
 function initSwiper() {
-  if (swiperInstance) {
-    swiperInstance.destroy(true, true);
-    swiperInstance = null;
-  }
+  if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
 
   const total = document.querySelectorAll(".swiper-slide").length;
   updateSlideCounter(1, total);
@@ -319,19 +610,11 @@ function initSwiper() {
     centeredSlides: true,
     spaceBetween: 32,
     speed: 380,
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
+    pagination: { el: ".swiper-pagination", clickable: true },
+    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
     keyboard: { enabled: true },
     on: {
-      slideChange() {
-        updateSlideCounter(this.activeIndex + 1, this.slides.length);
-      },
+      slideChange() { updateSlideCounter(this.activeIndex + 1, this.slides.length); },
     },
   });
 }
@@ -340,15 +623,18 @@ function updateSlideCounter(current, total) {
   document.getElementById("slideCounter").textContent = `${current} / ${total}`;
 }
 
-// ── Capture helper (clones slide off-screen to avoid Swiper clipping) ──
+// ── Capture (off-screen clone avoids Swiper overflow clipping) ─────
 async function captureSlide(slideEl) {
   const accentColor = document.getElementById("slideSwiper").style.getPropertyValue("--slide-primary") || "#FAD4C0";
-
   const clone = slideEl.cloneNode(true);
-  clone.style.cssText = "position:fixed;top:-9999px;left:0;transform:none;z-index:-1;";
+  // Set positioning individually — cssText would overwrite editor inline styles (bg/color)
+  clone.style.position = "fixed";
+  clone.style.top = "-9999px";
+  clone.style.left = "0";
+  clone.style.transform = "none";
+  clone.style.zIndex = "-1";
   clone.style.setProperty("--slide-primary", accentColor);
   document.body.appendChild(clone);
-
   const canvas = await html2canvas(clone, { scale: 2, useCORS: true, allowTaint: true });
   document.body.removeChild(clone);
   return canvas;
@@ -374,7 +660,6 @@ async function copy(id) {
 async function downloadSlides() {
   const slides = document.querySelectorAll(".slide");
   if (!slides.length) { alert("Generate slides first."); return; }
-
   for (let i = 0; i < slides.length; i++) {
     const canvas = await captureSlide(slides[i]);
     const link = document.createElement("a");
@@ -387,16 +672,13 @@ async function downloadSlides() {
 async function downloadPDF() {
   const slides = document.querySelectorAll(".slide");
   if (!slides.length) { alert("Generate slides first."); return; }
-
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [1080, 1080] });
-
   for (let i = 0; i < slides.length; i++) {
     const canvas = await captureSlide(slides[i]);
     const img = canvas.toDataURL("image/jpeg", 0.92);
     if (i > 0) pdf.addPage([1080, 1080]);
     pdf.addImage(img, "JPEG", 0, 0, 1080, 1080);
   }
-
   pdf.save("carousel.pdf");
 }

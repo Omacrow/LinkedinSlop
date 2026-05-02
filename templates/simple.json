@@ -1,0 +1,12 @@
+{
+  "name": "simple",
+  "label": "Simple",
+  "swatchColor": "#3B82F6",
+  "darkBase": false,
+  "fonts": [
+    "Inter",
+    "JetBrains Mono"
+  ],
+  "css": ".style-simple { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; width: 1080px; height: 1080px; padding: 64px; background-color: var(--slide-surface, #FFFFFF); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; } .style-simple::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(139, 92, 246, 0.02) 100%); pointer-events: none; } .style-simple .hook { font-size: 80px; font-weight: 900; line-height: 1.1; color: var(--slide-text, #111827); max-width: 90%; margin: 0; letter-spacing: -1px; position: relative; z-index: 1; } .style-simple .text { font-size: 50px; font-weight: 500; line-height: 1.3; color: var(--slide-text, #111827); max-width: 85%; margin: 0; position: relative; z-index: 1; } .style-simple .step { position: absolute; top: 64px; right: 64px; font-size: 160px; font-weight: 900; color: var(--slide-text, #111827); opacity: 0.08; line-height: 1; font-family: 'JetBrains Mono', monospace; z-index: 0; } .style-simple .brand { position: absolute; bottom: 64px; left: 64px; font-size: 18px; font-weight: 500; color: var(--slide-text, #111827); letter-spacing: 0.5px; z-index: 1; } .slide-code.style-simple { background-color: var(--slide-surface-dark, #1F2937); background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%); } .slide-code.style-simple .hook, .slide-code.style-simple .text, .slide-code.style-simple .brand { color: var(--slide-text-light, #F3F4F6); } .slide-code.style-simple .step { color: var(--slide-text-light, #F3F4F6); opacity: 0.12; } .slide-insight.style-simple { background-color: var(--slide-surface-dark, #1F2937); background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 163, 74, 0.06) 100%); } .slide-insight.style-simple .hook, .slide-insight.style-simple .brand { color: var(--slide-text-light, #F3F4F6); } .slide-insight.style-simple .text { color: rgba(243, 244, 246, 0.95); } .slide-insight.style-simple .insight-text { font-size: 48px; font-weight: 600; line-height: 1.35; color: var(--slide-primary, #3B82F6); max-width: 80%; margin: 24px 0 0 0; position: relative; z-index: 1; } .slide-insight.style-simple .step { color: var(--slide-text-light, #F3F4F6); opacity: 0.15; }",
+  "generatedAt": "2026-05-02T15:29:33.032Z"
+}

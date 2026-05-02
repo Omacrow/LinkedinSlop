@@ -31,7 +31,26 @@
       "Bash(Sort-Object FullName)",
       "Bash(Format-Table -AutoSize)",
       "WebFetch(domain:www.typeui.sh)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(curl -s \"https://www.typeui.sh/design-skills\")",
+      "Bash(python -c \"import sys, json, re; content = sys.stdin.read\\(\\); matches = re.findall\\(r'\\\\\"name\\\\\":\\\\\"\\([^\\\\\"]+\\)\\\\\"', content\\); [print\\(m\\) for m in matches[:60]]\")",
+      "Bash(node scripts/generate-templates.js)",
+      "Bash(Measure-Object)",
+      "Bash(Select-Object -ExpandProperty Count)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(node -e ' *)",
+      "Bash(npx typeui.sh pull paper)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(npx typeui.sh pull cosmic)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx --yes typeui.sh pull cosmic)",
+      "Bash(npm pack *)",
+      "Bash(npx typeui.sh list)",
+      "WebFetch(domain:registry.typeui.sh)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/bergside/awesome-design-skills/main/skills/index.json\")",
+      "Bash(node scripts/pull-skills.js)"
     ]
   }
 }

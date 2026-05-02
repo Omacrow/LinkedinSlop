@@ -1,0 +1,12 @@
+{
+  "name": "ant",
+  "label": "Ant",
+  "swatchColor": "#1677ff",
+  "darkBase": false,
+  "fonts": [
+    "Plus Jakarta Sans",
+    "JetBrains Mono"
+  ],
+  "css": ".style-ant { background-color: var(--surface, #FFFFFF); font-family: 'Plus Jakarta Sans', sans-serif; position: relative; overflow: hidden; } .style-ant .hook { font-size: 80px; font-weight: 900; line-height: 1.2; color: var(--text, #111827); margin: 0; padding: 32px 32px 0 32px; max-width: 90%; word-wrap: break-word; } .style-ant .text { font-size: 50px; font-weight: 500; line-height: 1.3; color: var(--text, #111827); margin: 16px 0 0 0; padding: 0 32px; max-width: 90%; word-wrap: break-word; } .style-ant .step { position: absolute; top: 32px; right: 32px; font-size: 160px; font-weight: 900; color: var(--text, #111827); opacity: 0.08; line-height: 1; margin: 0; } .style-ant .brand { position: absolute; bottom: 24px; left: 32px; font-size: 18px; font-weight: 600; color: var(--primary, #1677ff); letter-spacing: 0.5px; margin: 0; } .style-ant::before { content: ''; position: absolute; top: 0; right: 0; width: 280px; height: 280px; background: radial-gradient(circle, var(--primary, #1677ff) 0%, transparent 70%); opacity: 0.06; border-radius: 50%; pointer-events: none; } .slide-code.style-ant { background-color: #0a0e27; } .slide-code.style-ant .hook { color: #e4e6eb; } .slide-code.style-ant .text { color: #b8bcc4; } .slide-code.style-ant .step { color: #e4e6eb; opacity: 0.06; } .slide-code.style-ant .brand { color: var(--primary, #1677ff); } .slide-code.style-ant::before { background: radial-gradient(circle, var(--primary, #1677ff) 0%, transparent 70%); opacity: 0.08; } .slide-insight.style-ant { background: linear-gradient(135deg, #111827 0%, #1a202c 100%); } .slide-insight.style-ant .hook { color: #ffffff; } .slide-insight.style-ant .text { color: #e5e7eb; } .slide-insight.style-ant .insight-text { font-size: 56px; font-weight: 600; line-height: 1.4; color: #ffffff; padding: 32px; max-width: 90%; word-wrap: break-word; margin: 24px 0 0 0; } .slide-insight.style-ant .step { color: #ffffff; opacity: 0.08; } .slide-insight.style-ant .brand { color: var(--primary, #1677ff); } .slide-insight.style-ant::before { background: radial-gradient(circle, var(--primary, #1677ff) 0%, transparent 70%); opacity: 0.12; }",
+  "generatedAt": "2026-05-02T15:18:34.521Z"
+}

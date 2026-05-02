@@ -1,0 +1,13 @@
+{
+  "name": "minimal",
+  "label": "Minimal",
+  "swatchColor": "#0C0C09",
+  "darkBase": false,
+  "fonts": [
+    "Open Sans",
+    "Inter",
+    "Inconsolata"
+  ],
+  "css": ".style-minimal { background-color: var(--surface, #F4F4F1); color: var(--text, #0C0C09); width: 1080px; height: 1080px; display: flex; flex-direction: column; justify-content: center; padding: 64px; font-family: 'Open Sans', sans-serif; position: relative; overflow: hidden; } .style-minimal .hook { font-family: 'Inter', sans-serif; font-size: 80px; font-weight: 900; line-height: 1.1; color: var(--text, #0C0C09); margin: 0; padding-top: 32px; } .style-minimal .text { font-family: 'Open Sans', sans-serif; font-size: 50px; font-weight: 500; line-height: 1.3; color: var(--text, #0C0C09); margin: 32px 0 0 0; padding: 0; max-width: 90%; } .style-minimal .step { position: absolute; top: 64px; right: 64px; font-family: 'Inter', sans-serif; font-size: 160px; font-weight: 900; color: var(--text, #0C0C09); opacity: 0.08; margin: 0; line-height: 1; } .style-minimal .brand { position: absolute; bottom: 64px; left: 64px; font-family: 'Open Sans', sans-serif; font-size: 18px; font-weight: 600; color: var(--text, #0C0C09); letter-spacing: 0.5px; margin: 0; } .style-minimal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--slide-primary, #0C0C09); } .slide-code.style-minimal { background-color: #0C0C09; color: #F4F4F1; } .slide-code.style-minimal .hook { color: #F4F4F1; } .slide-code.style-minimal .text { color: #F4F4F1; } .slide-code.style-minimal .step { color: #F4F4F1; opacity: 0.12; } .slide-code.style-minimal .brand { color: #F4F4F1; } .slide-code.style-minimal::before { background: var(--slide-primary, #312C85); } .slide-insight.style-minimal { background: linear-gradient(135deg, #0C0C09 0%, #312C85 100%); color: #F4F4F1; } .slide-insight.style-minimal .hook { color: #F4F4F1; } .slide-insight.style-minimal .insight-text { font-family: 'Open Sans', sans-serif; font-size: 48px; font-weight: 500; line-height: 1.4; color: #F4F4F1; margin: 24px 0 0 0; padding: 0; max-width: 85%; letter-spacing: -0.5px; } .slide-insight.style-minimal .text { color: #F4F4F1; } .slide-insight.style-minimal .step { color: #F4F4F1; opacity: 0.15; } .slide-insight.style-minimal .brand { color: #F4F4F1; } .slide-insight.style-minimal::before { background: var(--slide-primary, #16A34A); }",
+  "generatedAt": "2026-05-02T15:25:01.849Z"
+}

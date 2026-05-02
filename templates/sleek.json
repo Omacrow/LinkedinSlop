@@ -1,0 +1,11 @@
+{
+  "name": "sleek",
+  "label": "Sleek",
+  "swatchColor": "#3B82F6",
+  "darkBase": false,
+  "fonts": [
+    "Inter"
+  ],
+  "css": ".style-sleek { display: flex; flex-direction: column; justify-content: center; width: 1080px; height: 1080px; padding: 80px; background-color: var(--slide-surface, #FFFFFF); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; } .style-sleek::before { content: ''; position: absolute; top: -40%; right: -40%; width: 600px; height: 600px; background: radial-gradient(circle, var(--slide-primary, #3B82F6), transparent); opacity: 0.08; border-radius: 50%; pointer-events: none; } .style-sleek .hook { font-size: 80px; font-weight: 900; line-height: 1.1; color: var(--slide-text, #111827); margin-bottom: 24px; max-width: 90%; letter-spacing: -1px; } .style-sleek .text { font-size: 50px; font-weight: 500; line-height: 1.3; color: var(--slide-text, #111827); margin-bottom: 48px; max-width: 85%; opacity: 0.85; } .style-sleek .step { position: absolute; top: 80px; right: 80px; font-size: 160px; font-weight: 900; color: var(--slide-text, #111827); opacity: 0.08; line-height: 1; } .style-sleek .brand { position: absolute; bottom: 80px; left: 80px; font-size: 18px; font-weight: 600; color: var(--slide-primary, #3B82F6); letter-spacing: 0.5px; } .slide-code.style-sleek { background-color: #0F172A; } .slide-code.style-sleek .hook { color: #F1F5F9; } .slide-code.style-sleek .text { color: #E2E8F0; } .slide-code.style-sleek .step { color: #F1F5F9; opacity: 0.12; } .slide-code.style-sleek .brand { color: #60A5FA; } .slide-code.style-sleek::before { background: radial-gradient(circle, #3B82F6, transparent); opacity: 0.12; } .slide-insight.style-sleek { background: linear-gradient(135deg, #111827 0%, #1F2937 100%); } .slide-insight.style-sleek .hook { color: #F1F5F9; } .slide-insight.style-sleek .insight-text { color: #D1D5DB; font-size: 48px; font-weight: 500; } .slide-insight.style-sleek .text { color: #D1D5DB; } .slide-insight.style-sleek .step { color: #F1F5F9; opacity: 0.1; } .slide-insight.style-sleek .brand { color: #93C5FD; }",
+  "generatedAt": "2026-05-02T15:18:16.724Z"
+}

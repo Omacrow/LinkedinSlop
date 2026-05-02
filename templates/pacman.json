@@ -1,0 +1,12 @@
+{
+  "name": "pacman",
+  "label": "Pacman",
+  "swatchColor": "#2A3FE5",
+  "darkBase": true,
+  "fonts": [
+    "Press Start 2P",
+    "Space Mono"
+  ],
+  "css": ".style-pacman { background-color: var(--slide-surface, #000000); color: var(--slide-text, #111827); font-family: 'Press Start 2P', cursive; width: 1080px; height: 1080px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 48px; border: 4px dotted var(--slide-primary, #2A3FE5); box-sizing: border-box; overflow: hidden; } .style-pacman::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(2px 2px at 20px 30px, var(--slide-primary, #2A3FE5) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.1; pointer-events: none; z-index: 1; } .style-pacman > * { position: relative; z-index: 2; } .style-pacman .hook { font-size: 80px; font-weight: 900; line-height: 1.1; letter-spacing: 2px; color: var(--slide-primary, #2A3FE5); text-transform: uppercase; margin: 0; text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5); } .style-pacman .text { font-size: 50px; font-weight: 500; line-height: 1.2; letter-spacing: 1px; color: var(--slide-text, #111827); text-transform: uppercase; margin: 24px 0 0 0; max-width: 90%; } .style-pacman .step { position: absolute; top: 48px; right: 48px; font-size: 160px; font-weight: 900; line-height: 1; color: var(--slide-primary, #2A3FE5); opacity: 0.15; letter-spacing: 4px; } .style-pacman .brand { font-size: 18px; font-weight: 700; letter-spacing: 1px; color: var(--slide-primary, #2A3FE5); text-transform: uppercase; margin: 0; } .slide-code.style-pacman { background-color: #0a0e27; color: #e0e0e0; border-color: var(--slide-primary, #2A3FE5); } .slide-code.style-pacman .hook { color: #16A34A; text-shadow: 4px 4px 0px rgba(22, 163, 74, 0.3); } .slide-code.style-pacman .text { color: #e0e0e0; } .slide-code.style-pacman .brand { color: #16A34A; } .slide-insight.style-pacman { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #ffffff; border-color: var(--slide-primary, #2A3FE5); } .slide-insight.style-pacman .hook { color: var(--slide-primary, #2A3FE5); } .slide-insight.style-pacman .insight-text { font-size: 48px; font-weight: 600; line-height: 1.3; letter-spacing: 1px; color: #ffffff; text-transform: uppercase; margin: 32px 0; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); } .slide-insight.style-pacman .text { color: #ffffff; } .slide-insight.style-pacman .brand { color: #F4B9B0; }",
+  "generatedAt": "2026-05-02T15:26:50.034Z"
+}

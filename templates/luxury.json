@@ -1,0 +1,12 @@
+{
+  "name": "luxury",
+  "label": "Luxury",
+  "swatchColor": "#FAFAFA",
+  "darkBase": true,
+  "fonts": [
+    "Oswald",
+    "JetBrains Mono"
+  ],
+  "css": ".style-luxury { background-color: var(--slide-surface, #000000); color: var(--slide-text, #ffffff); font-family: 'Oswald', sans-serif; width: 1080px; height: 1080px; display: flex; flex-direction: column; justify-content: center; padding: 64px; position: relative; box-sizing: border-box; } .style-luxury .hook { font-size: 80px; font-weight: 900; font-family: 'Oswald', sans-serif; line-height: 1.1; letter-spacing: -0.02em; color: var(--slide-primary, #FAFAFA); margin: 0; padding: 0; max-width: 90%; } .style-luxury .text { font-size: 50px; font-weight: 500; font-family: 'Oswald', sans-serif; line-height: 1.3; color: var(--slide-text, #ffffff); margin: 0; padding: 0; max-width: 85%; } .style-luxury .step { position: absolute; top: 64px; right: 64px; font-size: 160px; font-weight: 900; font-family: 'Oswald', sans-serif; color: var(--slide-primary, #FAFAFA); opacity: 0.08; line-height: 1; margin: 0; padding: 0; } .style-luxury .brand { position: absolute; bottom: 64px; left: 64px; font-size: 18px; font-weight: 600; font-family: 'Oswald', sans-serif; color: var(--slide-primary, #FAFAFA); letter-spacing: 0.08em; text-transform: uppercase; margin: 0; padding: 0; } .style-luxury::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--slide-primary, #FAFAFA) 0%, transparent 100%); opacity: 0.2; } .slide-code.style-luxury { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border: 1px solid rgba(250, 250, 250, 0.1); box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6); } .slide-code.style-luxury .hook { color: var(--slide-primary, #FAFAFA); text-shadow: 0 0 20px rgba(250, 250, 250, 0.1); } .slide-insight.style-luxury { background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 100%); border-left: 4px solid var(--slide-primary, #FAFAFA); } .slide-insight.style-luxury .insight-text { font-size: 48px; font-weight: 600; font-family: 'Oswald', sans-serif; color: var(--slide-primary, #FAFAFA); line-height: 1.4; letter-spacing: -0.01em; padding: 0; margin: 0; max-width: 90%; text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); }",
+  "generatedAt": "2026-05-02T15:24:26.223Z"
+}
