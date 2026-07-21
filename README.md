@@ -46,14 +46,6 @@ HF_API_KEY=hf_...
 
 > HuggingFace is fully free — create an account, generate a Read token, done.
 
-## Deploy to Vercel
-
-1. Push this repo to GitHub
-2. Import it at [vercel.com/new](https://vercel.com/new)
-3. Add `CLAUDE_API_KEY` and `HF_API_KEY` under **Settings → Environment Variables**
-4. Deploy
-
-## Usage
 
 1. Type a topic — or hit **↻** for a random one
 2. Pick an accent color for your slides
